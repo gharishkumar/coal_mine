@@ -82,7 +82,7 @@ void sensorDataRead(){
   if ((temperature > 40.0) || (gasSensor > 70) || (rainSensor > 70))
   {
     digitalWrite(buzzer,HIGH);
-    Serial.println("---------------------Warning--------------------");
+    Serial.println("----------------------Warning--------------------");
     if (state)
     {
       Blynk.notify("Warning limits exceded safety range");
