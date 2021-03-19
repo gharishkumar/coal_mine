@@ -8,11 +8,12 @@ LiquidCrystal_I2C lcd(0x27,16,2);
 SoftwareSerial bluetooth(14,12);
 BlynkTimer timer;
 
-const int buzzer = 17;
+const int buzzer = 13;
 float humidity, temperature;
 int rainSensor, gasSensor;
-bool state = true;
-String sensorValues;
+float humidityTreshold = 80.0, temperatureTreshold = 40.0;
+int rainSensorTreshold = 70, gasSensorTreshold = 70;
+String temperatureSensorState, gasSensorState, rainSensorState, sensorValues;
 
 char auth[] = "yourBlynkToken";
 
@@ -71,7 +72,7 @@ void sensorDataRead(){
   lcd.print("%   ");
   lcd.setCursor(0,1);
 
-  if (rainSensor > 70)
+  if (rainSensor > rainSensorTreshold)
   {
     lcd.print("WATER PERSENT   ");
   }
@@ -79,20 +80,18 @@ void sensorDataRead(){
   {
     lcd.print("NO WATER PERSENT");
   }
-  if ((temperature > 40.0) || (gasSensor > 70) || (rainSensor > 70))
+  if ((temperature > temperatureTreshold) || (gasSensor > gasSensorTreshold) || (rainSensor > rainSensorTreshold))
   {
     digitalWrite(buzzer,HIGH);
-    Serial.println("----------------------Warning--------------------");
-    if (state)
-    {
-      Blynk.notify("Warning limits exceded safety range");
-      state = false;
-    }
+    temperatureSensorState = (temperature > temperatureTreshold)?"temperature ":"";
+    gasSensorState = (gasSensor > gasSensorTreshold)?"gasSensor ":"";
+    rainSensorState = (rainSensor > rainSensorTreshold)?"rainSensor ":"";
+    
+    Blynk.notify("Warning "+temperatureSensorState+gasSensorState+rainSensorState+"limits exceded safety range");
   }
   else
   {
     digitalWrite(buzzer,LOW);
-    state = true;
   }
   Blynk.virtualWrite(V1, (int)humidity);
   Blynk.virtualWrite(V2, (int)temperature);
