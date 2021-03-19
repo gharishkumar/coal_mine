@@ -1,6 +1,5 @@
 #include "DHT.h"
 #include <SoftwareSerial.h>
-#include <ArduinoJson.h>
 SoftwareSerial bluetooth(5,6);
 
 DHT dht(2, DHT11);
